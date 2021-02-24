@@ -26,23 +26,25 @@ const particlesOptions = {
   },
 };
 
+const initialState = {
+  input: "",
+  imageUrl: "",
+  box: {},
+  route: "signin",
+  isSignedIn: false,
+  user: {
+    id: "",
+    name: "",
+    email: "",
+    entries: 0,
+    joined: "",
+  },
+};
+
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      input: "",
-      imageUrl: "",
-      box: {},
-      route: "signin",
-      isSignedIn: false,
-      user: {
-        id: "",
-        name: "",
-        email: "",
-        entries: 0,
-        joined: ""
-      }
-    };
+    this.state = initialState;
   }
 
   loadUser = (data) => {
@@ -52,9 +54,10 @@ class App extends Component {
         name: data.name,
         email: data.email,
         entries: data.entries,
-        joined: data.joined
-   }})
- }
+        joined: data.joined,
+      },
+    });
+  };
 
   calculateFaceLocation = (data) => {
     const clarifaiFace =
@@ -90,25 +93,28 @@ class App extends Component {
             method: "put",
             headers: { "content-type": "application/json" },
             body: JSON.stringify({
-              id: this.state.user.id
-            })
-          }).then(response => response.json())
-            .then(count => {
-              this.setState(Object.assign(this.state.user, {
-                entries: count
-              }))
+              id: this.state.user.id,
+            }),
           })
+            .then((response) => response.json())
+            .then((count) => {
+              this.setState(
+                Object.assign(this.state.user, {
+                  entries: count,
+                })
+              );
+            })
+            .catch(console.log);
         }
         this.displayFaceBox(this.calculateFaceLocation(response)).catch((err) =>
           console.log(err)
-        )
-      }
-      )
+        );
+      });
   };
 
   onRouteChange = (route) => {
     if (route === "signout") {
-      this.setState({ isSignedIn: false });
+      this.setState(initialState);
     } else if (route === "home") {
       this.setState({ isSignedIn: true });
     }
